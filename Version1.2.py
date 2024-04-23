@@ -6,7 +6,7 @@
 # All you need to play is an IDE and Python so far. Just look at the code or play it as you wish. But enjoy!
 
 ####################################################################################################################################################################################
-
+#GitHub first change test
 
 from random import *
 from time import *

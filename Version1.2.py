@@ -6,9 +6,6 @@
 # All you need to play is an IDE and Python so far. Just look at the code or play it as you wish. But enjoy!
 
 ####################################################################################################################################################################################
-#GitHub first change test
-#Github 2nd change test! :P
-#3rd test, pulling from GitHub to local
 
 from random import *
 from time import *

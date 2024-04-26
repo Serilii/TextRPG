@@ -7,16 +7,17 @@
 
 ####################################################################################################################################################################################
 
+
 from random import *
 from time import *
 import os
 from copy import *
-import keyboard
 #import cursor --> cursor.hide()  # module to be downloaded/ experimental
 
 #variablen
 flag_fighting = False
 flag_shopping = False
+flag_in_dungeon = False
 defeated_enemies = 0
 damage_done = 0
 inventory = []
@@ -337,28 +338,45 @@ witch_hut = building("Witch Hut")
 
 ####################################### class for caves #####################################
 class cave:
-    def __init__(self, name: str, starting_x, starting_y, cavemap):
+    def __init__(self, name: str, starting_x, starting_y, cavemap, monster_array = None):
         self.name = name
         self.starting_x = starting_x    #caves starting coordinates
         self.starting_y = starting_y    
         self.cavemap = cavemap          #contains the array with the current map to load it
+        self.monster_array = monster_array      #corresponding monster array to list the monsters
+
 
     def enter(self):
-        p1.worldmap_x = p1.x            #safes the players coordinate into his world coordinate. for exiting
-        p1.worldmap_y = p1.y            
-        p1.x = self.starting_x          #brings the player to the maps start
-        p1.y = self.starting_y
-        global current_world    
-        current_world = self.cavemap    #current map becomes the cavemap
-        print("You entered a cave")
+        print("You stand in front of a cave. There is a shield:")
+        print("'Beware of ", end = "") 
+        self.list_enemies() 
+        print("Do you want to enter?")
+        action = input()
+        if action.lower() == "yes":
+            p1.worldmap_x = p1.x            #safes the players coordinate into his world coordinate. for exiting later
+            p1.worldmap_y = p1.y            
+            p1.x = self.starting_x          #brings the player to the maps start
+            p1.y = self.starting_y
+            global current_world    
+            current_world = self.cavemap    #current map becomes the cavemap
+            global flag_in_dungeon 
+            flag_in_dungeon = True
+            print("You entered the cave.")
 
     def exit(self):
         global current_world
         current_world = worldmap       #loads the worldmap back into "current_world"
         p1.x = p1.worldmap_x           #teleports you back to your last position that was saved
         p1.y = p1.worldmap_y
-        print("You left the cave")
-        
+        global flag_in_dungeon
+        flag_in_dungeon = False
+        print("You left the cave.")
+    
+    def list_enemies(self):             #function to return list of current enemies in the cave
+        for monster in self.monster_array:
+            if monster.name != "dummy":
+                print(monster.name, end = "s , ")
+        print("forgetting Moms birthday!'")
 
 ####################################### class for NPCs #####################################
 class npc:
@@ -425,7 +443,7 @@ for i in cave1_map:                          #a line of caveground
 
 cave1_map[9][4].item = attackpotion
 
-cave1 = cave("Tunnel", 1, 4,cave1_map )
+cave1 = cave("Tunnel", 1, 4,cave1_map, enemies_cave1 )
 
 
 cave1_tile = tile("Tunnel entrance", False, None, None, None, cave1 )   # overworld tile for cave1
@@ -1011,7 +1029,7 @@ def open_shop():
                 if action == itm.number:
                     sure(itm)    
         except:
-            pass
+            action = ""
 
 def open_witch_hut():
     speak("You see a little hut nearby. You could swear the roof is made of gingerbread. You leave some breadcrumbs on the ground to be sure and enter.")
@@ -1105,10 +1123,7 @@ def losing(): #loosing logi with stats like: enemies defeated, damage done, unsp
 def speak(text):
     for x in text:
         if x == "." or x == "!" or x == "?":
-            if keyboard.read_key() == "#":
-                sleep(0.0001)
-            else:
-                sleep(0.2)
+            sleep(0.2)
         print(x, end ="", flush= True)
         sleep(textspeed)
 

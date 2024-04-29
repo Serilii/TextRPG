@@ -24,6 +24,8 @@ inventory = []
 enemies = []
 shop = []
 
+yes_array = ["yes", "yeah", "yo", "ys", "ahoi", "yup", "correct", "right"]
+
 #important global variables
 crit_bonus = 0              #bonus chance for critting, additive, whole numbers (+5 increases critchance by flat 5% )
 healing_multiplicator = 1   #healing multiplicator, factorial (1.5 = + 50% )
@@ -31,7 +33,8 @@ textspeed = 0.02            #lower textspeed means faster
 spawn_chance = 40           #spawn chance of monsters in whole numbers
 world_height = 9
 world_width = 9
- 
+
+
 ####################################### class for player ####################################
 class player:
     def __init__(self, name, hp, maxhp, gold, x, y, mana, maxmana):
@@ -1012,7 +1015,7 @@ def open_shop():
         print(i.get_name() + "\t" + str(i.value) + " Gold\t Nr. " + str(i.number) + "\t\t use:  " + i.function)
     print("________________________________________________________________________________________")
     global flag_shopping
-    flag_shopping = True
+    flag_shopping = True            #shopping flag 
     while flag_shopping == True :
         print("You can select items by typing the name, Nr. \t type '0' or 'exit' to go back.")
         action = input()
@@ -1060,6 +1063,34 @@ def open_witch_hut():
         except:
             pass
 
+def open_pawn_shop():
+    print("________________________________________________________________________________________")
+    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+    for itm in inventory:
+        if itm.quantity > 0:
+            print(str(itm.quantity) + " x " + itm.get_name() + + str(int(itm.value/2)) + " Gold \t Nr. " + str(itm.number) + "\t\tuse: " + itm.function )
+            print("________________________________________________________________________________________")
+    global flag_shopping
+    flag_shopping = True            #shopping flag 
+    while flag_shopping == True :
+        print("You can select items by typing the name, Nr. \t type '0' or 'exit' to go back.")
+        action = input()
+        if action == "0" or action.lower() == "exit":
+            speak("You value your items far too much to sell them for a price this low. Hoarding always pays off! You leave with your bag full of useless items.")   
+            flag_shopping = False
+            return
+        for itm in shop:
+            if action.lower() == itm.name.lower():
+                sell(itm)
+        try:
+            action=int(action)
+            for itm in shop:
+                if action == itm.number:
+                    sell(itm)        
+        except:
+            action = ""
+
+
 #buying item
 def sure(item):
     a = item
@@ -1076,7 +1107,10 @@ def sure(item):
                 print("'YES' or 'NO'?!\n")
     else:
         speak("'I think this is a bit too expensive sweety.' *The elderly Lady smiles slightly but lovely*")          
- 
+
+
+
+
 # assuring item buy
 def buy(item):
     b = item
@@ -1097,7 +1131,24 @@ def buy(item):
         inventory[b.number].increase(amnt)
         print("You bought " + str(amnt) + "x "  + b.name + ".")
     print("You got " +  str(p1.gold) + " Gold left to spend.")
-   
+
+def sell(itm):
+    speak("So you want to sell some" + itm.name + " , yes?")
+    answer = input()
+    if answer.lower() in yes_array:
+        try:
+            ammount = int(input("How many do you want to sell?"))
+        except:
+            print("I was asking for a number...whatever. Wanna sell anything else?")
+            return
+        if ammount > itm.quantity:
+            
+        else:
+            print("You don't have that many but fine.")
+
+    else:
+        speak("Okay?...")
+
 #enemy spawning logic
 def enemy_spawn(new_enemy):
     global current_enemy
@@ -1502,7 +1553,6 @@ set_numbers(enemies)   #set numbers on all enemies
 
 def okay():
     junk = input(" ↩ ")
-
 
 
 current_world = worldmap        #current_world checks whatever world you are in right now, it changes depending wheter you are in the worldmap or eg. in a cave or smn

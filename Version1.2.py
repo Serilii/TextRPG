@@ -6,7 +6,7 @@
 # All you need to play is an IDE and Python so far. Just look at the code or play it as you wish. But enjoy!
 
 ####################################################################################################################################################################################
-
+#ideas : magic system, defensive options (shields, dodges), glasses that show enemy stats, random item chances at pawn shop
 
 from random import *
 from time import *
@@ -24,7 +24,8 @@ inventory = []
 enemies = []
 shop = []
 
-yes_array = ["yes", "yeah", "yo", "ys", "ahoi", "yup", "correct", "right"]
+yes_array = ["yes", "yeah", "yo", "ys","ye", "ahoi", "yup", "ja", "correct", "right", "si", "sure", "okay", "agree", "absolutely", "roger", "aye", "positive"]
+no_array = ["no", "nope", "nop", "nein", "never" , "not", "negative", "njet" ]
 
 #important global variables
 crit_bonus = 0              #bonus chance for critting, additive, whole numbers (+5 increases critchance by flat 5% )
@@ -277,14 +278,14 @@ def buy_weapon(wpn):
     if a.bagged == False and current_weapon.name != a.name :        
         if a.price <= p1.gold:
                 q = ""
-                while not(q.lower() == "yes" or q.lower() == "no") :
+                while not(q.lower() in yes_array or q.lower() in no_array) :
                     q = input("Do you want to buy the " + a.name + "? 'Yes' or 'No'?\n")
-                    if q.lower() == "yes":
+                    if q.lower() in yes_array:
                         current_weapon.replace(a)
                         p1.gold -= a.price
                         print("You bought and equiped a " + a.name)
                         sleep(0.5)
-                    elif q.lower() == "no":
+                    elif q.lower() in no_array:
                         print("Then don't waste my time!")
         else:
             speak("You can't afford this. *The smith exhales loduly*")    
@@ -321,9 +322,9 @@ class building:
     def open(self):
         print("There is a " + self.name + " nearby.")
         action = ""
-        while action.lower() != "yes" and action.lower() != "no":
+        while not(action.lower() in yes_array or action.lower() in no_array):
             action = input("Do you want to enter? 'Yes' or 'No'\n")
-            if action.lower() == "yes":
+            if action.lower() in yes_array:
                 match self.name.lower() :
                     case "smithy":  open_smithy()
                     case "shop":   open_shop()
@@ -355,7 +356,7 @@ class cave:
         self.list_enemies() 
         print("Do you want to enter?")
         action = input()
-        if action.lower() == "yes":
+        if action.lower() in yes_array:
             p1.worldmap_x = p1.x            #safes the players coordinate into his world coordinate. for exiting later
             p1.worldmap_y = p1.y            
             p1.x = self.starting_x          #brings the player to the maps start
@@ -1063,33 +1064,6 @@ def open_witch_hut():
         except:
             pass
 
-def open_pawn_shop():
-    print("________________________________________________________________________________________")
-    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
-    for itm in inventory:
-        if itm.quantity > 0:
-            print(str(itm.quantity) + " x " + itm.get_name() + + str(int(itm.value/2)) + " Gold \t Nr. " + str(itm.number) + "\t\tuse: " + itm.function )
-            print("________________________________________________________________________________________")
-    global flag_shopping
-    flag_shopping = True            #shopping flag 
-    while flag_shopping == True :
-        print("You can select items by typing the name, Nr. \t type '0' or 'exit' to go back.")
-        action = input()
-        if action == "0" or action.lower() == "exit":
-            speak("You value your items far too much to sell them for a price this low. Hoarding always pays off! You leave with your bag full of useless items.")   
-            flag_shopping = False
-            return
-        for itm in shop:
-            if action.lower() == itm.name.lower():
-                sell(itm)
-        try:
-            action=int(action)
-            for itm in shop:
-                if action == itm.number:
-                    sell(itm)        
-        except:
-            action = ""
-
 
 #buying item
 def sure(item):
@@ -1097,11 +1071,11 @@ def sure(item):
     if a.value <= p1.gold:
         # print("The " + a.name + " costs " + str(a.value) " gold. Do you want to buy it?\n")
         answer = ""
-        while not(answer.lower() == "yes" or answer.lower() == "no"):
+        while not(answer.lower() in yes_array or answer.lower() in no_array):
             answer = input(a.name + "? For " + str(a.value) +  " Gold? Do you want to buy it? 'Yes' or 'No'\n")
-            if answer.lower() == "yes":
+            if answer.lower() in yes_array:
                 buy(item)
-            elif answer.lower() == "no":
+            elif answer.lower() in no_array:
                 print("'Okay?...weird..'")
             else:
                 print("'YES' or 'NO'?!\n")
@@ -1132,22 +1106,64 @@ def buy(item):
         print("You bought " + str(amnt) + "x "  + b.name + ".")
     print("You got " +  str(p1.gold) + " Gold left to spend.")
 
+def sell_pawn_shop():
+    global flag_shopping
+    flag_shopping = True            #shopping flag 
+    while flag_shopping == True :
+        print("________________________________________________________________________________________")
+        print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+        for itm in inventory:
+            if itm.quantity > 0:
+                print(str(itm.quantity) + " x " + itm.get_name() + "\t\t" +  str(int(itm.value/2)) + (4 - len(str(int(itm.value/2))))* " " + "Gold \t Nr. " + str(itm.number) + "\t\tuse: " + itm.function )    # (4 - len(str(int(itm.value/2))))* " " makes the space even depending on the digits of the gold value 
+        print("________________________________________________________________________________________")
+        print(f"Current gold : {p1.gold} ")
+        print("You can select items by typing the name, Nr. \t type '0' or 'exit' to go back.")
+        action = input()
+        if action == "0" or action.lower() == "exit":
+            speak("You value your items far too much to sell them for a price this low. Hoarding always pays off! You leave with your bag full of useless items.")   
+            flag_shopping = False
+            return
+        for itm in inventory: 
+            if action == itm.name.lower() and itm.quantity > 0:
+                sell(itm)
+        try:
+            action=int(action)
+            for itm in inventory:
+                if action == itm.number and itm.quantity > 0:
+                    sell(itm)        
+        except:
+            action = ""
+
+
 def sell(itm):
-    speak("So you want to sell some" + itm.name + " , yes?")
+    print("So you want to sell some " + itm.name + " , yes?")
     answer = input()
     if answer.lower() in yes_array:
+        print("How many do you want to sell?")
+        ammount = input()
         try:
-            ammount = int(input("How many do you want to sell?"))
+            ammount = int(ammount)
         except:
             print("I was asking for a number...whatever. Wanna sell anything else?")
             return
-        if ammount > itm.quantity:
-            
+        if ammount <= itm.quantity:
+            print(f"Sell {ammount} x {itm.name} for {ammount*int(itm.value/2)} G?")
+            answer2 = input()
+            if answer2.lower() in yes_array or answer2 == "":
+                itm.decrease(ammount)
+                price =  int(itm.value/2) * ammount
+                p1.gold += price
+                print(f"Sold! Got {price} G!")
+                okay()
+                
+            else:
+                speak("....Jeez. Anything else?")
+                return
         else:
-            print("You don't have that many but fine.")
+            print("You don't have that many but fine. Wanna sell anything else?") #not enough of that item
 
     else:
-        speak("Okay?...")
+        speak("Okay?...")   #not said "yes" to selling question
 
 #enemy spawning logic
 def enemy_spawn(new_enemy):
@@ -1487,7 +1503,7 @@ def move_west_animation():
 
 def debugging():        #taking debug option
     action = print("What do you want to do?")
-    action = input("Options are: 'item' , 'teleport' , 'fight' , 'gold' , 'heal' , 'mana', 'buff', 'stfu', 'repel' 'cauldron' \n")
+    action = input("Options are: 'item' , 'teleport' , 'fight' , 'gold' , 'heal' , 'mana', 'buff', 'stfu', 'repel' , 'cauldron' , 'sell' \n")
     action = action.lower()
     match action:
         case "teleport":
@@ -1523,7 +1539,8 @@ def debugging():        #taking debug option
             global spawn_chance
             spawn_chance = 0  if spawn_chance == 40 else 40
             print(f"The spawn chance changed to {spawn_chance} %.") 
-
+        case "sell":
+            sell_pawn_shop()
         case _:
             print("Fine. Keep your debugging for yourself then.")
         

@@ -12,7 +12,6 @@ from random import *
 from time import *
 import os
 from copy import *
-#import cursor --> cursor.hide()  # module to be downloaded/ experimental
 
 #variablen
 flag_fighting = False
@@ -101,15 +100,15 @@ class item:
 #creating some items
 dummy = item("Dummy", 0, 0, 0, "", 0)
 potion = item("Potion", 10, 5, 50, "Restores health\t", True)
-testitem = item("item with loooooong name", 0, 1, 0, "hard to pronounce")
+testitem = item("item with loooooong name", 0, 0, 0, "hard to pronounce")
 stone = item("Stone",1, 4, 0, "Looks very throwable" ,)
 bottle = item("Empty bottle", 1, 0, 0, "I don't remember drinking this..")
 superpotion = item("Super Potion", 35, 1, 100, "Restores even more health")
 healingherb = item("Healing Herb", 3, 5, 5, "Used to brew potions" )
 attackpotion = item("Attack Potion", 50, 0, 0, "Buffs Attack for 5 rounds", True )
 defensepotion = item("Defense Potion", 50, 1, 0, "Buffs defense for 5 rounds", True)
-batfang = item("Bat Fang", 10, 1, 0, "A hand full of sharp Bat fangs")
-slime_item = item("Slime", 3, 1, 0, "Is this...the corpse?!..",)
+batfang = item("Bat Fang", 10, 0, 0, "A hand full of sharp Bat fangs")
+slime_item = item("Slime", 3, 0, 0, "Is this...the corpse?!..",)
 
 #packing every item into inventory
 inventory = [dummy, potion, testitem, stone, bottle, superpotion, healingherb, attackpotion, defensepotion, batfang, slime_item]
@@ -244,24 +243,27 @@ smithy = [woodensword, baseballbat, katana, bow, steelsword, axe, spear]
  
 #opening smithy
 def open_smithy():
+    global flag_shopping
     speak("The further you follow the rising smoke the louder the sound of hammering metal gets. A silent man is heating up the forge. You enter. ")
     speak("'Welcome. I sell weapons.")
     sleep(1)
-    print("Current gold:  " + str(p1.gold))
-    print("________________________________________________________________________________________")
-    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
-    for i in smithy:
-        print(i.get_name() + "\t" + str(i.price) + " Gold     \tNr. " + str(i.number) + "\t\t use:  " + i.text)
-    print("________________________________________________________________________________________")
-    global flag_shopping
     flag_shopping = True
     while flag_shopping == True :
-        print("You can select weapons by typing the name or Nr. \t type '0' or 'exit' to go leave.")
+        print("")
+        print("Current gold:  " + str(p1.gold))
+        print("________________________________________________________________________________________")
+        print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+        for i in smithy:
+            print(i.get_name() + "\t" + str(i.price) + " Gold     \tNr. " + str(i.number) + "\t\t use:  " + i.text)
+        print("________________________________________________________________________________________")
+        print("You can buy weapons by typing the name or Nr. \t type '0' or 'exit' to go leave.")
         action = input()
         if action == "0" or action.lower() == "exit":
             speak("As the smith hammers the steel a spark flies into your eye. One of your eyes whitnesses you leaving the smithy. Ouch..")   
             flag_shopping = False
             return
+        if action.lower() == "sell":
+            sell_pawn_shop()
         for wpn in smithy:
             if action.lower() == wpn.name.lower():
                 buy_weapon(wpn)
@@ -311,6 +313,7 @@ artifact = baseitem("Artifact ", "A weird stone you found in your pocket. It tic
 artifact.obtained = True
 whetstone = baseitem("Whetstone", "A chonky little whetstone for your weapons. The sharpness increases your crit chance.")
 cauldron = baseitem("Cauldron", "You can craft stuff in this. Very handy! Very witchy..")
+selling_permission = baseitem("Merchant Certificate", "Allows you to sell items. Half the price is all you manage tho..")
 #put your base items into here!!!! :
 baseitems = [artifact, pendant1, pendant2, whetstone, cauldron]
  
@@ -606,11 +609,12 @@ def cauldron_list():        #needed for the open cauldron function, it's here fo
 #Status Bar
 def anzeige():
     os.system('cls')
+
     print()
     if flag_fighting == True:
         print("////////////////////////////////////////////////////////////////////////////////////////")
-        print("|؏࿉࿈|\t" + p1.get_name() + " " + player_healthbar() + " HP: " + str(int(p1.hp)) + " / " + str(p1.maxhp) + "    Weapon: " + current_weapon.name + (("\tMana: " + str(p1.mana) + " / " + str(p1.maxmana)) if p1.mana > 0 else "" ))
-        print("|༖༗࿇|\t" + current_enemy.get_name() + " " + enemy_healthbar() + " HP: " + str(current_enemy.hp) + " / " + str(current_enemy.maxhp))
+        print("|؏࿉࿈|\t" + p1.get_name() +"\t " + player_healthbar() + " HP: " + str(int(p1.hp)) + " / " + str(p1.maxhp) + "    Weapon: " + current_weapon.name + (("\tMana: " + str(p1.mana) + " / " + str(p1.maxmana)) if p1.mana > 0 else "" ))
+        print("|༖༗࿇|\t" + current_enemy.get_name()  + "\t" + enemy_healthbar() + " HP: " + str(current_enemy.hp) + " / " + str(current_enemy.maxhp))
         print(r"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
         for i in buff_array:
             if i.counter > 0:
@@ -1006,24 +1010,26 @@ def open_inventory():
                             
 
 def open_shop():
+    global flag_shopping
+    flag_shopping = True            #shopping flag 
     speak("You see a little shop, in there seems to be a friendly elderly Lady. You enter and a chiming bell above the door gives you a cozy feeling.")
     speak("'Welcome, to my shop. Get some items here.'")
     sleep(1)
-    print("Current gold:  " + str(p1.gold))
-    print("________________________________________________________________________________________")
-    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
-    for i in shop:
-        print(i.get_name() + "\t" + str(i.value) + " Gold\t Nr. " + str(i.number) + "\t\t use:  " + i.function)
-    print("________________________________________________________________________________________")
-    global flag_shopping
-    flag_shopping = True            #shopping flag 
     while flag_shopping == True :
-        print("You can select items by typing the name, Nr. \t type '0' or 'exit' to go back.")
+        print("Current gold:  " + str(p1.gold))
+        print("________________________________________________________________________________________")
+        print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+        for i in shop:
+            print(i.get_name() + "\t" + str(i.value) + " Gold\t Nr. " + str(i.number) + "\t\t use:  " + i.function)
+        print("________________________________________________________________________________________")
+        print("You can buy items by typing the name, Nr. \t type '0' or 'exit' to go back.")
         action = input()
         if action == "0" or action.lower() == "exit":
             speak("You turn around, leave and slam the door as hard as you can for no reason at all. You hear a vase falling from a shelf behind you.")   
             flag_shopping = False
             return
+        if action.lower() == "sell":
+            sell_pawn_shop()
         for itm in shop:
             if action.lower() == itm.name.lower():
                 sure(itm)
@@ -1036,23 +1042,26 @@ def open_shop():
             action = ""
 
 def open_witch_hut():
+    global flag_shopping
+    flag_shopping = True
     speak("You see a little hut nearby. You could swear the roof is made of gingerbread. You leave some breadcrumbs on the ground to be sure and enter.")
     speak("'Welcome, to 'The Witchy'. I sell potions. No you can't eat the roof.'")
     sleep(1)
-    print("Current gold:  " + str(p1.gold))
-    print("________________________________________________________________________________________")
-    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
-    for itm in witch_hut_items:
-        print(itm.get_name() + "\t" + str(itm.value) + " Gold\t\t Nr. " + str(itm.number) + "\t\t use:  " + itm.function)
-    print("________________________________________________________________________________________")
-    global flag_shopping
-    flag_shopping = True
     while flag_shopping == True :
-        print("You can select items by typing the name, Nr. or type '0' to go back.")
+        print("")
+        print("Current gold:  " + str(p1.gold))
+        print("________________________________________________________________________________________")
+        print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+        for itm in witch_hut_items:
+            print(itm.get_name() + "\t" + str(itm.value) + " Gold\t\t Nr. " + str(itm.number) + "\t\t use:  " + itm.function)
+        print("________________________________________________________________________________________")
+        print("You can buy items by typing the name, Nr. or type '0' to go back.")
         action = input()
         if action == "0" or action.lower() == "exit":
             speak("You follow the breadcrumbs and leave the hut. You are still raw.")
             flag_shopping = False
+        if action.lower() == "sell":
+            sell_pawn_shop()        
         for itm in witch_hut_items:
             if action.lower() == itm.name.lower():
                 sure(itm)
@@ -1107,6 +1116,9 @@ def buy(item):
     print("You got " +  str(p1.gold) + " Gold left to spend.")
 
 def sell_pawn_shop():
+    if selling_permission.obtained == False:
+        print("You feel too embarassed to ask.. (๑﹏๑//) ")
+        return
     global flag_shopping
     flag_shopping = True            #shopping flag 
     while flag_shopping == True :
@@ -1117,11 +1129,9 @@ def sell_pawn_shop():
                 print(str(itm.quantity) + " x " + itm.get_name() + "\t\t" +  str(int(itm.value/2)) + (4 - len(str(int(itm.value/2))))* " " + "Gold \t Nr. " + str(itm.number) + "\t\tuse: " + itm.function )    # (4 - len(str(int(itm.value/2))))* " " makes the space even depending on the digits of the gold value 
         print("________________________________________________________________________________________")
         print(f"Current gold : {p1.gold} ")
-        print("You can select items by typing the name, Nr. \t type '0' or 'exit' to go back.")
+        print("You can sell items by typing the name, Nr. \t type '0' or 'exit' to go back.")
         action = input()
-        if action == "0" or action.lower() == "exit":
-            speak("You value your items far too much to sell them for a price this low. Hoarding always pays off! You leave with your bag full of useless items.")   
-            flag_shopping = False
+        if action == "0" or action.lower() == "exit":   
             return
         for itm in inventory: 
             if action == itm.name.lower() and itm.quantity > 0:
@@ -1540,6 +1550,7 @@ def debugging():        #taking debug option
             spawn_chance = 0  if spawn_chance == 40 else 40
             print(f"The spawn chance changed to {spawn_chance} %.") 
         case "sell":
+            selling_permission.obtained = True
             sell_pawn_shop()
         case _:
             print("Fine. Keep your debugging for yourself then.")

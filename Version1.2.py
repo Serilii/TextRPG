@@ -8,6 +8,8 @@
 ####################################################################################################################################################################################
 #ideas : magic system, defensive options (shields, dodges), glasses that show enemy stats, random item chances at pawn shop
 
+#TEST COMMENT SASCHA
+
 from random import *
 from time import *
 import os

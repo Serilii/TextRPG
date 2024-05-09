@@ -64,11 +64,6 @@ defensepotion = item("Defense Potion", 50, 1, 0, "Buffs defense for 5 rounds", T
 batfang = item("Bat Fang", 10, 0, 0, "A hand full of sharp Bat fangs")
 slime_item = item("Slime", 3, 0, 0, "Is this...the corpse?!..",)
 
-#packing every item into inventory
-inventory = [dummy, potion, testitem, stone, bottle, superpotion, healingherb, attackpotion, defensepotion, batfang, slime_item]
-
-shop = [potion, stone, bottle, superpotion ]
-witch_hut_items = [healingherb, attackpotion, defensepotion]
 
 #define using item
 def use_item(item):

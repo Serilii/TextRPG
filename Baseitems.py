@@ -23,6 +23,5 @@ artifact.obtained = True
 whetstone = baseitem("Whetstone", "A chonky little whetstone for your weapons. The sharpness increases your crit chance.")
 cauldron = baseitem("Cauldron", "You can craft stuff in this. Very handy! Very witchy..")
 selling_permission = baseitem("Merchant Certificate", "Allows you to sell items. Half the price is all you manage tho..")
-#put your base items into here!!!! :
-baseitems = [artifact, pendant1, pendant2, whetstone, cauldron]
+
 

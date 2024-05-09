@@ -22,8 +22,9 @@ from Player import *
 from item import *
 from enemies import *
 from weaponClass import *
-from basitems import *
+from Baseitems import *
 
+from Lists import *
 
 ####################################### class for buildings ####################################
 class building:

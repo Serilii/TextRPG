@@ -30,6 +30,8 @@ class enemy:
         return y
 
 #crating some enemys                #lootchances are in % x 100 (natural numbers idk)
+from enemies import *
+
 dummy = enemy("dummy", 0, 0, 0, 0)
 slime = enemy("Slime", 30, 3, 0, 5, slime_item, 1, 80)
 goblin = enemy("Goblin", 70, 7, 4, 13)
@@ -41,15 +43,3 @@ ork = enemy("Ork", 100, 13, 5, 25)
 eviled = enemy("EvilED", 66, 11, 6, 9)
 troll = enemy("Troll", 80, 17, 3, 20)
 
-#packing them all in an array
-enemies = [dummy, slime, goblin, wolf, schlumpf, bat, ork, eviled, troll]
-enemies_cave1 = [dummy, slime, bat]
-#return one enemy of this array
-def get_enemy():
-    global current_world
-    if current_world == cave1_map:
-        r = enemies_cave1[randint(1,len(enemies_cave1)-1)]    
-    else:
-        r = enemies[randint(1,len(enemies)-1)]
-
-    return r

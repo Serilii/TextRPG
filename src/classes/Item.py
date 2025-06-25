@@ -1,20 +1,16 @@
+#regular consumable items
+
 if __name__ == "__main__":
-    from starting_variables import *
-    from main import *
+    #debugger silencer
+    from core.variables import *
+    from classes.Player import player
+    p1 = player("", 0,0,0,1,1,0,0)
+    from classes.Enemy import *
+    from classes.Buff import *
 
+inventory = []
 
-####################################### class for regular items ####################################
 class item:
-    
-    name = ""
-    value = 0
-    quantity = 0
-    healing = 0
-    function = ""
-    number = 0
-    potion = False
-
-    
     def __init__(self, name, value, quantity, healing, function : str, potion = False):
         self.name = name
         self.value = value
@@ -23,6 +19,8 @@ class item:
         self.function = function
         self.number = 0
         self.potion = potion
+        inventory.append(self)
+
 
     def increase(self, ammount):
         self.quantity += ammount
@@ -50,7 +48,7 @@ class item:
         y = self.name + x*"\t"
         return y
 
-
+    
 #creating some items
 dummy = item("Dummy", 0, 0, 0, "", 0)
 potion = item("Potion", 10, 5, 50, "Restores health\t", True)
@@ -64,8 +62,7 @@ defensepotion = item("Defense Potion", 50, 1, 0, "Buffs defense for 5 rounds", T
 batfang = item("Bat Fang", 10, 0, 0, "A hand full of sharp Bat fangs")
 slime_item = item("Slime", 3, 0, 0, "Is this...the corpse?!..",)
 
-
-#define using item
+#use regular consumale item (incl health potion for now) 
 def use_item(item):
     global flag_fighting
     if item.quantity > 0:   #checking if item quantity is > 0
@@ -94,6 +91,8 @@ def use_item(item):
         print("I have none of that.")
     junk = input(" ↩ ")
 
+
+#using buffing potion
 def use_potion(ptn):
     match ptn.name.lower():
         case "attack potion":

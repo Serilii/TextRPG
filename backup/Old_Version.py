@@ -1,11 +1,10 @@
 if __name__ == "__main__":
     ############################################################################# Interlude ############################################################################################
 
-    # Hello there! This is my very first program. The purpose is to learn the basics of coding , applying them to a playable game and bugfixing everything just to learn what's possible and what isn't.
-    # Since I learned a lot by actively coding, there might be code snippets with more or less quality inbetween. Don't be surprised! :)
-    # Funfact: Animations in the console are possible and present in the game!
-    # All you need to play is an IDE and Python so far. Just look at the code or play it as you wish. But enjoy!
-
+    # Welcome. What you see here is the very first project with which I learned the basics of programing. 
+    # You might find some weird code snippets here or there because I learn the best by doing it myself.
+    # To run the application in the current state clone the repo and run it in your IDE's terminal. Sounds weird but you will probably enjoy some minor animations ;)
+    
     ####################################################################################################################################################################################
     #ideas : magic system, defensive options (shields, dodges), glasses that show enemy stats, random item chances at pawn shop
 
@@ -649,6 +648,9 @@ if __name__ == "__main__":
         s = x*"♥" + (10-x)*"♡"
         return s
 
+    def help_actions():
+        speak("some easy commands you can try: up/down/left/right , explore , talk , map , items , quests")
+
     # worldmap menu logic
     def take_menu_command():
         sleep(0.1)
@@ -657,7 +659,7 @@ if __name__ == "__main__":
         if p1.hp / p1.maxhp < 0.4 and get_current_tile_name().lower() == "grassland":
             print("You feel pretty tired... You could use a round of sleep..")
         sleep(0.1)
-        print(" ( º ֊ º)ᕤ  What's next? You can move 'up/down/left/right' ,  see your 'items' , open the 'map', 'explore' your surrounding, 'talk' to someone, see your 'quests' ")
+        print(" ( º ֊ º)ᕤ  What's next? Say 'help' if you need some!")
         print("or use the 'cauldron'" if cauldron.obtained == True else "")
         action = ""
         checks = ["item","items", "move", "sleep", "rest", "up", "down", "left", "right", "map", "talk", "debug", "explore", "quest", "quests", "cauldron", "dig", "exit"]  #array of possible menu commands for the while loop, all options need to be added
@@ -701,6 +703,8 @@ if __name__ == "__main__":
                     dig()
                 case "exit":
                     leave()
+                case "help" :
+                    help_actions()
                 #if you put an option here, put it into "check" ! ! !
                 case _:
                     pass
